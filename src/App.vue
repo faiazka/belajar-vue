@@ -1,23 +1,23 @@
 <template>
   <div id="app" class="container mt-5">
-    <roouter-view
+    <router-view
       :cart="cart"
       :cartQty="cartQty"
       :cartTotal="cartTotal"
       v-model:maximum="maximum"
       :products="products"
       :sliderStatus="sliderStatus"
-      @toggle="toggle"
+      @toggle="toggleSliderStatus"
       @add="addItem"
       @delete="deleteItem"
-    ></roouter-view>
+    ></router-view>
   </div>
 </template>
 
 <script>
 export default {
   name: "App",
-  data: function () {
+  data() {
     return {
       maximum: 20,
       products: [],
@@ -25,51 +25,42 @@ export default {
       sliderStatus: false,
     };
   },
-  mounted: function () {
+  mounted() {
     fetch("https://hplussport.com/api/products/order/price")
       .then((response) => response.json())
       .then((data) => {
+        console.log(data); // Log the fetched data
         this.products = data;
-      });
+      })
+      .catch((error) => console.error("Error fetching products:", error));
   },
   computed: {
-    cartTotal: function () {
-      let sum = 0;
-      for (let key in this.cart) {
-        sum = sum + this.cart[key].product.price * this.cart[key].qty;
-      }
-      return sum;
+    cartTotal() {
+      return this.cart.reduce(
+        (sum, item) => sum + item.product.price * item.qty,
+        0
+      );
     },
-    cartQty: function () {
-      let qty = 0;
-      for (let key in this.cart) {
-        qty = qty + this.cart[key].qty;
-      }
-      return qty;
+    cartQty() {
+      return this.cart.reduce((qty, item) => qty + item.qty, 0);
     },
   },
   methods: {
-    toggleSliderStatus: function () {
+    toggleSliderStatus() {
       this.sliderStatus = !this.sliderStatus;
     },
-    addItem: function (product) {
-      let productIndex;
-      let productExist = this.cart.filter(function (item, index) {
-        if (item.product.id == Number(product.id)) {
-          productIndex = index;
-          return true;
-        } else {
-          return false;
-        }
-      });
+    addItem(product) {
+      const productIndex = this.cart.findIndex(
+        (item) => item.product.id === Number(product.id)
+      );
 
-      if (productExist.length) {
+      if (productIndex !== -1) {
         this.cart[productIndex].qty++;
       } else {
-        this.cart.push({ product: product, qty: 1 });
+        this.cart.push({ product, qty: 1 });
       }
     },
-    deleteItem: function (key) {
+    deleteItem(key) {
       if (this.cart[key].qty > 1) {
         this.cart[key].qty--;
       } else {

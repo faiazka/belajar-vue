@@ -1,5 +1,5 @@
-import Vue from "vue";
-import VueRouter from "vue-router";
+import { createApp } from "vue";
+import { createRouter, createWebHistory } from "vue-router";
 import App from "./App.vue";
 import "bootstrap";
 import "bootstrap/dist/css/bootstrap.css";
@@ -15,23 +15,22 @@ import Checkout from "./components/Checkout.vue";
 
 library.add(faShoppingCart, faDollarSign);
 
-Vue.use(VueRouter);
-Vue.config.productionTip = false;
+const routes = [
+  {
+    path: "/checkout",
+    component: Checkout,
+  },
+  {
+    path: "/:pathMatch(.*)*", // Updated catch-all route
+    component: Products,
+  },
+];
 
-const router = new VueRouter({
-  routes: [
-    {
-      path: "*",
-      component: Products,
-    },
-    {
-      path: "/checkout",
-      component: Checkout,
-    },
-  ],
+const router = createRouter({
+  history: createWebHistory(),
+  routes,
 });
 
-new Vue({
-  render: (h) => h(App),
-  router,
-}).$mount("#app");
+const app = createApp(App);
+app.use(router);
+app.mount("#app");

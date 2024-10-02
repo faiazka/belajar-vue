@@ -33,33 +33,30 @@
 import Price from "./Price.vue";
 
 export default {
-  name: "product-list",
+  name: "ProductList", // Capitalized component name
   components: {
     Price,
   },
   props: ["products", "maximum"],
   computed: {
-    showItem: function () {
-      let max = this.maximum;
-      return this.products.filter(function (item) {
-        return item.price <= max;
-      });
+    showItem() {
+      return this.products.filter((item) => item.price <= this.maximum);
     },
   },
   methods: {
-    before: function (el) {
+    before(el) {
       el.className = "d-none";
     },
-    enter: function (el) {
-      var delay = el.dataset.index * 100;
-      setTimeout(function () {
+    enter(el) {
+      const delay = el.dataset.index * 100;
+      setTimeout(() => {
         el.className =
           "row d-flex mb-3 align-items-center animated fadeInRight";
       }, delay);
     },
-    leave: function (el) {
-      var delay = el.dataset.index * 100;
-      setTimeout(function () {
+    leave(el) {
+      const delay = el.dataset.index * 100;
+      setTimeout(() => {
         el.className =
           "row d-flex mb-3 align-items-center animated fadeOutRight";
       }, delay);
